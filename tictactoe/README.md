@@ -38,21 +38,11 @@ javac .\tictactoe\*.java
 java -cp .\tictactoe Main
 ```
 
-## Navigation Video
+Preview:
 
-If you want to add a demo video, place it in the project folder and update the link below.
+- Demo : [Watch the demo](F:\Java\tictactoe\tictactoe.png)
 
-- Demo video: [Watch the navigation video](https://example.com/navigation-demo)
 
-> Replace the example link with a real video URL or a local file path like `navigation-demo.mp4`.
-
-## Clean Up
-
-To remove compiled files:
-
-```powershell
-Remove-Item -Force f:\Java\tictactoe\*.class
-```
 
 ## Notes
 
