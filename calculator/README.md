@@ -22,7 +22,7 @@ A beginner-friendly Java Swing calculator application with basic and advanced op
 
 ## Preview
 
-![Calculator Preview](F:\Java\calculator\calculator.png)
+[![Calculator Preview](calculator-preview.png)](https://github.com/Madhusmita-16/Java/tree/main/calculator)
 
 
 
