@@ -22,9 +22,9 @@ A beginner-friendly Java Swing calculator application with basic and advanced op
 
 ## Preview
 
-![Calculator Preview](calculator-preview.png)
+![Calculator Preview](F:\Java\calculator\calculator-preview.png)
 
-> Add an image file named `calculator-preview.png` in the calculator folder to display the preview here.
+
 
 ## How to Run
 
