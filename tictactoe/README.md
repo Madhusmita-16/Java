@@ -40,9 +40,7 @@ java -cp .\tictactoe Main
 
 Preview:
 
-- Demo : [Watch the demo](F:\Java\tictactoe\tictactoe.png)
-
-
+![Tic Tac Toe Demo](tictactoe.png)
 
 ## Notes
 
