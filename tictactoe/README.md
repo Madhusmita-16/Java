@@ -1,49 +1,50 @@
 # Tic Tac Toe Java
 
-A simple two-player Tic Tac Toe game built with Java Swing.
+A clean and beginner-friendly two-player Tic Tac Toe game built with Java Swing.
 
-## Project Folder
+## Project Overview
 
-`f:\Java\tictactoe`
+This project demonstrates a simple desktop game using Java object-oriented design and Swing UI components.
 
-## Files
+## Folder Structure
 
-- `Main.java` - Starts the application.
-- `Game.java` - Controls game flow, turns, and win/draw checks.
-- `Player.java` - Stores player name and symbol.
-- `Board.java` - Manages the 3×3 board state and move validation.
-- `GameStatus.java` - Defines `PLAYING`, `PLAYER_WON`, and `DRAW` states.
-- `ScoreBoard.java` - Tracks player wins and draws.
-- `TicTacToeGUI.java` - Builds the Swing interface and handles UI events.
-- `.gitignore` - Prevents compiled `.class` files from being committed.
+- `Main.java` - application entry point.
+- `Game.java` - game logic, turn management, and win/draw detection.
+- `Player.java` - player data and symbol assignment.
+- `Board.java` - board state, move validation, and board reset.
+- `GameStatus.java` - game state enum: `PLAYING`, `PLAYER_WON`, `DRAW`.
+- `ScoreBoard.java` - tracks player wins and draw count.
+- `TicTacToeGUI.java` - Swing interface and event handling.
+- `.gitignore` - excludes generated `.class` files.
 
-## What It Does
+## Features
 
-- Shows a welcome screen for player names.
-- Displays a clickable 3×3 board.
-- Alternates turns between X and O.
-- Detects wins across rows, columns, and diagonals.
-- Detects draws when the board fills.
-- Highlights winning cells and freezes the board.
-- Supports restart, new game, and exit confirmation.
-- Validates empty names and duplicate moves.
+- Welcome screen with player name inputs
+- Clickable 3×3 board cells
+- X/O turn switching
+- Win detection for rows, columns, and diagonals
+- Draw detection when the board is full
+- Highlighting winning cells
+- Restart game, new game, and exit confirmation
+- Session scoreboard for wins and draws
+- Input validation for empty names and invalid moves
 
 ## How to Run
 
 From `f:\Java`:
 
 ```powershell
-javac tictactoe\*.java
-java -cp tictactoe Main
+javac .\tictactoe\*.java
+java -cp .\tictactoe Main
 ```
 
 ## Navigation Video
 
-A short navigation video can help you follow the game flow and menu options. If you have a demo video, place it in the project folder and update this link accordingly.
+If you want to add a demo video, place it in the project folder and update the link below.
 
 - Demo video: [Watch the navigation video](https://example.com/navigation-demo)
 
-> Tip: Replace the example link with a real video URL or local file path such as `navigation-demo.mp4`.
+> Replace the example link with a real video URL or a local file path like `navigation-demo.mp4`.
 
 ## Clean Up
 
@@ -55,7 +56,7 @@ Remove-Item -Force f:\Java\tictactoe\*.class
 
 ## Notes
 
-- This project uses Java Swing only, no database required.
-- The game is designed for a desktop environment.
+- This project uses Java Swing only and does not require a database.
+- Designed for desktop use with a simple, modern interface.
 
-Enjoy the game! 🎮
+Enjoy playing Tic Tac Toe! 🎮
