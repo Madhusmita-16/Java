@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Riddle Arena - Interactive Spring Boot Gaming Experience</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Background Mesh Ambient -->
+    <div class="bg-ambient">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand" onclick="app.navigateTo('dashboard')">
+                <i class="fa-solid fa-brain brand-icon"></i>
+                <span class="brand-title">RIDDLE<span class="brand-highlight">AI</span></span>
+            </div>
+            
+            <nav class="nav-links" id="nav-links">
+                <button class="nav-btn active" data-view="dashboard" onclick="app.navigateTo('dashboard')">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-view="leaderboard" onclick="app.navigateTo('leaderboard')">
+                    <i class="fa-solid fa-trophy"></i> Leaderboard
+                </button>
+
+                <div class="nav-auth-group" id="nav-auth-group">
+                    <!-- Dynamic Auth links -->
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="app-main" id="app-main">
+
+        <!-- VIEW 1: AUTHENTICATION (LOGIN / REGISTER) -->
+        <section id="view-auth" class="view-section hidden">
+            <div class="auth-card glass-panel">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tab-login-btn" onclick="auth.switchTab('login')">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </button>
+                    <button class="auth-tab" id="tab-register-btn" onclick="auth.switchTab('register')">
+                        <i class="fa-solid fa-user-plus"></i> Register
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="form-login" class="auth-form" onsubmit="auth.handleLogin(event)">
+                    <h2 class="form-title">Welcome Back, Solver</h2>
+                    <p class="form-subtitle">Enter your credentials to access the AI Riddle Arena</p>
+                    
+                    <div class="form-group">
+                        <label for="login-username"><i class="fa-solid fa-user"></i> Username or Email</label>
+                        <input type="text" id="login-username" class="form-input" placeholder="player1 or admin" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <span>Enter Arena</span> <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="form-register" class="auth-form hidden" onsubmit="auth.handleRegister(event)">
+                    <h2 class="form-title">Create Player Account</h2>
+                    <p class="form-subtitle">Join thousands of minds in the AI Riddle Challenge</p>
+                    
+                    <div class="form-group">
+                        <label for="reg-username"><i class="fa-solid fa-user"></i> Username</label>
+                        <input type="text" id="reg-username" class="form-input" placeholder="RiddleMaster99" required minlength="3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                        <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password"><i class="fa-solid fa-lock"></i> Password</label>
+                        <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-full">
+                        <span>Create Account & Start</span> <i class="fa-solid fa-circle-check"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW 2: DASHBOARD / LOBBY -->
+        <section id="view-dashboard" class="view-section hidden">
+            <div class="dashboard-grid">
+                <!-- User Profile Summary Banner -->
+                <div class="profile-banner glass-panel">
+                    <div class="user-info-wrapper">
+                        <div class="avatar-circle">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="user-details">
+                            <h2 id="dash-username">Player</h2>
+                            <p class="user-role-badge" id="dash-role">PLAYER</p>
+                        </div>
+                    </div>
+
+                    <div class="user-stats-strip">
+                        <div class="stat-pill">
+                            <i class="fa-solid fa-star icon-gold"></i>
+                            <div>
+                                <span class="stat-value" id="dash-high-score">0</span>
+                                <span class="stat-label">High Score</span>
+                            </div>
+                        </div>
+                        <div class="stat-pill">
+                            <i class="fa-solid fa-gamepad icon-cyan"></i>
+                            <div>
+                                <span class="stat-value" id="dash-games-played">0</span>
+                                <span class="stat-label">Games Played</span>
+                            </div>
+                        </div>
+                        <div class="stat-pill">
+                            <i class="fa-solid fa-bullseye icon-purple"></i>
+                            <div>
+                                <span class="stat-value" id="dash-accuracy">0%</span>
+                                <span class="stat-label">Accuracy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Setup Panel -->
+                <div class="lobby-card glass-panel">
+                    <div class="lobby-header">
+                        <h3><i class="fa-solid fa-gamepad"></i> Start New Game Session</h3>
+                        <p>Configure your challenge level and category for adaptive AI riddle selection</p>
+                    </div>
+
+                    <!-- Difficulty Picker -->
+                    <div class="config-section">
+                        <label class="config-label">Select Difficulty</label>
+                        <div class="difficulty-options">
+                            <button class="diff-card active" data-diff="Easy" onclick="game.setDifficulty('Easy')">
+                                <div class="diff-icon easy"><i class="fa-solid fa-feather-pointed"></i></div>
+                                <h4>Easy</h4>
+                                <span>100 pts / question</span>
+                            </button>
+                            <button class="diff-card" data-diff="Medium" onclick="game.setDifficulty('Medium')">
+                                <div class="diff-icon medium"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                                <h4>Medium</h4>
+                                <span>150 pts / question</span>
+                            </button>
+                            <button class="diff-card" data-diff="Hard" onclick="game.setDifficulty('Hard')">
+                                <div class="diff-icon hard"><i class="fa-solid fa-skull"></i></div>
+                                <h4>Hard</h4>
+                                <span>200 pts / question</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Category Picker -->
+                    <div class="config-section">
+                        <label class="config-label">Select Category</label>
+                        <div class="category-grid" id="category-picker-grid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-hero" onclick="game.initiateGame()">
+                        <i class="fa-solid fa-play"></i> LAUNCH RIDDLE ARENA
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: GAME ARENA -->
+        <section id="view-game" class="view-section hidden">
+            <div class="arena-container">
+                <!-- Arena Header Bar -->
+                <div class="arena-header glass-panel">
+                    <div class="progress-info">
+                        <span class="badge badge-difficulty" id="arena-diff-badge">MEDIUM</span>
+                        <span class="badge badge-category" id="arena-cat-badge">LOGIC</span>
+                        <span class="question-counter">Question <strong id="arena-current-q">1</strong> of <span id="arena-total-q">5</span></span>
+                    </div>
+
+                    <!-- Circular Progress Timer -->
+                    <div class="timer-wrapper">
+                        <svg class="timer-svg" viewBox="0 0 100 100">
+                            <circle class="timer-bg" cx="50" cy="50" r="42"></circle>
+                            <circle class="timer-bar" id="timer-bar" cx="50" cy="50" r="42"></circle>
+                        </svg>
+                        <span class="timer-seconds" id="timer-text">30</span>
+                    </div>
+
+                    <div class="score-display">
+                        <span class="score-label">SCORE</span>
+                        <span class="score-number" id="arena-score">0</span>
+                    </div>
+                </div>
+
+                <!-- Arena Question Box -->
+                <div class="arena-card glass-panel" id="arena-card">
+                    <div class="question-header">
+                        <i class="fa-solid fa-lightbulb question-icon"></i>
+                        <h2 class="question-text" id="arena-question-text">Loading question...</h2>
+                    </div>
+
+                    <!-- Hint Drawer -->
+                    <div class="hint-container hidden" id="hint-container">
+                        <div class="hint-box">
+                            <i class="fa-solid fa-wand-magic-sparkles hint-icon"></i>
+                            <div class="hint-content">
+                                <strong>AI Hint (-50% points penalty):</strong>
+                                <p id="hint-text-display">Hint text will appear here...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Answers Options / Inputs Container -->
+                    <div class="answer-options-wrapper" id="answer-options-wrapper">
+                        <!-- Options generated dynamically -->
+                    </div>
+
+                    <!-- Open Text Fallback Input -->
+                    <div class="text-answer-box hidden" id="text-answer-box">
+                        <input type="text" id="text-answer-input" class="form-input text-input-lg" placeholder="Type your answer here..." autocomplete="off">
+                    </div>
+
+                    <!-- Controls Bar -->
+                    <div class="arena-controls">
+                        <button class="btn btn-secondary" id="btn-hint" onclick="game.requestHint()">
+                            <i class="fa-solid fa-lightbulb"></i> Need Hint?
+                        </button>
+                        <button class="btn btn-primary" id="btn-submit" onclick="game.submitAnswer()">
+                            <span>Submit Answer</span> <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: GAME RESULTS -->
+        <section id="view-results" class="view-section hidden">
+            <div class="results-container glass-panel">
+                <div class="results-header">
+                    <div class="trophy-badge" id="res-rank-badge">👑 Riddle Master</div>
+                    <h1 class="results-title">Game Session Complete!</h1>
+                    <p class="results-subtitle">Here is your performance breakdown analyzed by AI Riddle Engine</p>
+                </div>
+
+                <!-- Summary Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon gold"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-value" id="res-total-score">0</span>
+                            <span class="metric-label">Final Score</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon cyan"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-value" id="res-accuracy">0%</span>
+                            <span class="metric-label">Accuracy Rate</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-value" id="res-correct-count">0/5</span>
+                            <span class="metric-label">Correct Answers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Breakdown Table -->
+                <div class="breakdown-wrapper">
+                    <h3><i class="fa-solid fa-list-check"></i> Detailed Question Review</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Riddle Question</th>
+                                <th>Your Answer</th>
+                                <th>Correct Answer</th>
+                                <th>Hint</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="res-breakdown-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn btn-secondary" onclick="app.navigateTo('dashboard')">
+                        <i class="fa-solid fa-house"></i> Return to Dashboard
+                    </button>
+                    <button class="btn btn-primary" onclick="game.initiateGame()">
+                        <i class="fa-solid fa-rotate-right"></i> Play Again
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 5: LEADERBOARD -->
+        <section id="view-leaderboard" class="view-section hidden">
+            <div class="leaderboard-container glass-panel">
+                <div class="section-title-box">
+                    <h2><i class="fa-solid fa-trophy icon-gold"></i> Global Player Rankings</h2>
+                    <p>Top riddle solvers across all difficulty levels</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Highest Score</th>
+                                <th>Games Played</th>
+                                <th>Average Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 6: USER GAME HISTORY -->
+        <section id="view-history" class="view-section hidden">
+            <div class="history-container glass-panel">
+                <div class="section-title-box">
+                    <h2><i class="fa-solid fa-clock-rotate-left icon-cyan"></i> Player Game History</h2>
+                    <p>Track your previous riddle sessions and improvement over time</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Game ID</th>
+                                <th>Date & Time</th>
+                                <th>Difficulty</th>
+                                <th>Category</th>
+                                <th>Score</th>
+                                <th>Accuracy</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 7: ADMIN PORTAL -->
+        <section id="view-admin" class="view-section hidden">
+            <div class="admin-container glass-panel">
+                <div class="admin-header">
+                    <h2><i class="fa-solid fa-user-shield icon-purple"></i> Admin Riddle Management</h2>
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" id="admin-riddles-tab" onclick="admin.switchTab('riddles')">Riddles Bank</button>
+                        <button class="admin-tab" id="admin-categories-tab" onclick="admin.switchTab('categories')">Categories</button>
+                    </div>
+                </div>
+
+                <!-- Admin Riddles Management -->
+                <div id="admin-riddles-section" class="admin-section">
+                    <div class="admin-actions-bar">
+                        <button class="btn btn-primary" onclick="admin.openRiddleModal()">
+                            <i class="fa-solid fa-plus"></i> Add New Riddle
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Question</th>
+                                    <th>Category</th>
+                                    <th>Difficulty</th>
+                                    <th>Correct Answer</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-riddles-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Categories Management -->
+                <div id="admin-categories-section" class="admin-section hidden">
+                    <div class="admin-actions-bar">
+                        <button class="btn btn-accent" onclick="admin.openCategoryModal()">
+                            <i class="fa-solid fa-plus"></i> Add New Category
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-categories-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- RIDDLE MODAL (ADD / EDIT) -->
+    <div id="riddle-modal" class="modal-overlay hidden">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3 id="riddle-modal-title">Add New Riddle</h3>
+                <button class="modal-close" onclick="admin.closeRiddleModal()">&times;</button>
+            </div>
+            <form id="riddle-form" onsubmit="admin.saveRiddle(event)">
+                <input type="hidden" id="riddle-id">
+                
+                <div class="form-group">
+                    <label>Riddle Question</label>
+                    <textarea id="riddle-question" class="form-input" rows="3" required></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="riddle-category" class="form-input" required>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <select id="riddle-difficulty" class="form-input" required>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correct Answer</label>
+                    <input type="text" id="riddle-correct-answer" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Multiple Choice Options (Comma separated e.g. "Option A, Option B, Option C, Option D")</label>
+                    <input type="text" id="riddle-options" class="form-input" placeholder="Option 1, Option 2, Option 3, Option 4">
+                </div>
+
+                <div class="form-group">
+                    <label>Alternative Answers (Comma separated e.g. "clock, wall clock")</label>
+                    <input type="text" id="riddle-alt-answers" class="form-input" placeholder="synonym1, synonym2">
+                </div>
+
+                <div class="form-group">
+                    <label>Hint Text</label>
+                    <input type="text" id="riddle-hint" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Base Points</label>
+                    <input type="number" id="riddle-points" class="form-input" value="100" min="50" max="500">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="admin.closeRiddleModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Riddle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CATEGORY MODAL (ADD / EDIT) -->
+    <div id="category-modal" class="modal-overlay hidden">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3 id="category-modal-title">Add Category</h3>
+                <button class="modal-close" onclick="admin.closeCategoryModal()">&times;</button>
+            </div>
+            <form id="category-form" onsubmit="admin.saveCategory(event)">
+                <input type="hidden" id="category-id">
+                
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="category-name" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="category-desc" class="form-input">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="admin.closeCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
