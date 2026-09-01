@@ -4,6 +4,19 @@ A complete, production-grade **AI Riddle Game** mini project built with **Java 1
 
 ---
 
+## 🎬 Walkthrough Demo & Screenshots
+
+### 🎨 UI Dashboard Preview
+![AI Riddle Arena Interface Preview](docs/images/preview.png)
+
+### 📹 Interactive Gameplay Session Video Recording
+![Full Gameplay Session Video Demo](docs/images/demo.webp)
+
+### 📊 Live Dashboard Screenshot
+![Live Player Dashboard UI](docs/images/dashboard.png)
+
+---
+
 ## 🌟 Key Features
 
 1. **User Authentication & Authorization**:
@@ -41,6 +54,8 @@ ai-riddle-game/
 ├── pom.xml
 ├── README.md
 ├── mvnw / mvnw.cmd
+├── docs/
+│   └── images/      # Walkthrough screenshots & demo video
 ├── .mvn/
 │   ├── wrapper/
 │   └── apache-maven-3.9.6/
@@ -136,7 +151,7 @@ ai-riddle-game/
 
 1. **Clone / Open Project**:
    ```bash
-   cd f:\works\ai-riddle-game
+   cd f:\works\Java\ai-riddle-game
    ```
 
 2. **Configure Database Credentials (Optional for MySQL)**:
