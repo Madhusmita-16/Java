@@ -91,12 +91,18 @@ public class SimulatedAIRiddleEngine implements AIRiddleEngine {
         if (StringUtils.hasText(riddle.getOptionsJson())) {
             try {
                 List<String> options = objectMapper.readValue(riddle.getOptionsJson(), new TypeReference<List<String>>() {});
+                String cleanedUser = userAnswer.trim().replaceAll("[^a-zA-Z0-9]", "");
                 for (int i = 0; i < options.size(); i++) {
                     String optText = options.get(i);
                     String normOpt = normalize(optText);
-                    // Match option index letter (e.g. "A", "B") or option text
                     String optionLetter = String.valueOf((char) ('A' + i));
-                    if (userAnswer.trim().equalsIgnoreCase(optionLetter) && normOpt.equals(normCorrect)) {
+                    String optionNumber = String.valueOf(i + 1);
+
+                    // Match option index letter ("A", "a", "A.") or number ("1", "2")
+                    boolean isLetterMatch = cleanedUser.equalsIgnoreCase(optionLetter) || cleanedUser.equalsIgnoreCase("option" + optionLetter);
+                    boolean isNumberMatch = cleanedUser.equals(optionNumber);
+
+                    if ((isLetterMatch || isNumberMatch) && normOpt.equals(normCorrect)) {
                         return new AnswerEvaluationResult(true, riddle.getCorrectAnswer(), "Correct option selected!");
                     }
                     if (normUser.equals(normOpt) && normOpt.equals(normCorrect)) {
