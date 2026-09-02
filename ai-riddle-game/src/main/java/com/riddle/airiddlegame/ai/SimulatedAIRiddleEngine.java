@@ -79,7 +79,8 @@ public class SimulatedAIRiddleEngine implements AIRiddleEngine {
             return new AnswerEvaluationResult(false, riddle.getCorrectAnswer(), "No answer provided.");
         }
 
-        String normUser = normalize(userAnswer);
+        String cleanedInput = cleanOptionPrefix(userAnswer);
+        String normUser = normalize(cleanedInput);
         String normCorrect = normalize(riddle.getCorrectAnswer());
 
         // 1. Direct normalized match
@@ -144,6 +145,15 @@ public class SimulatedAIRiddleEngine implements AIRiddleEngine {
         char firstChar = answer.charAt(0);
         return String.format("Category: %s. The answer starts with '%c' and is %d letters long.",
                 riddle.getCategory().getName(), firstChar, answer.length());
+    }
+
+    private String cleanOptionPrefix(String raw) {
+        if (raw == null) return "";
+        String trimmed = raw.trim();
+        if (trimmed.matches("(?i)^(option\\s*)?[a-z0-9][\\.\\:\\)]?$")) {
+            return trimmed;
+        }
+        return trimmed.replaceAll("(?i)^(option\\s*)?[a-z0-9][\\.\\:\\)\\-\\s]+\\s*", "");
     }
 
     private String normalize(String str) {
