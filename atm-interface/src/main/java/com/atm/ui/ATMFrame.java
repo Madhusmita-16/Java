@@ -42,11 +42,13 @@ public class ATMFrame extends JFrame {
     private static final Color TEXT_DARK = new Color(15, 23, 42);          // Deep Charcoal Text
     private static final Color TEXT_MUTED = new Color(71, 85, 105);        // Slate Muted Text
 
-    private static final Color BTN_PRIMARY = new Color(30, 64, 175);       // Deep Royal Blue
-    private static final Color BTN_SUCCESS = new Color(21, 128, 61);       // Deep Green
-    private static final Color BTN_WARNING = new Color(180, 83, 9);        // Deep Amber/Gold
-    private static final Color BTN_DANGER = new Color(185, 28, 28);        // Deep Red
-    private static final Color BTN_PURPLE = new Color(109, 40, 217);       // Deep Purple
+    // Vibrant Colorful Button Palette
+    private static final Color BTN_PRIMARY = new Color(37, 99, 235);       // Royal Sapphire Blue
+    private static final Color BTN_SUCCESS = new Color(5, 150, 105);       // Emerald Green
+    private static final Color BTN_WARNING = new Color(234, 88, 12);       // Sunset Orange
+    private static final Color BTN_DANGER = new Color(220, 38, 38);        // Crimson Red
+    private static final Color BTN_PURPLE = new Color(147, 51, 234);       // Vivid Violet
+    private static final Color BTN_INDIGO = new Color(79, 70, 229);        // Electric Indigo
 
     public ATMFrame(ATMService atmService) {
         this.atmService = atmService;
@@ -244,7 +246,7 @@ public class ATMFrame extends JFrame {
 
         panel.add(infoPanel, BorderLayout.NORTH);
 
-        // Actions Grid
+        // Actions Grid with Vibrant Colour Buttons
         JPanel grid = new JPanel(new GridLayout(3, 2, 10, 10));
         grid.setOpaque(false);
 
@@ -257,7 +259,7 @@ public class ATMFrame extends JFrame {
         JButton btnTransfer = createStyledButton("FUND TRANSFER", BTN_WARNING);
         btnTransfer.addActionListener(e -> showScreenCard("TRANSFER"));
 
-        JButton btnStatement = createStyledButton("MINI STATEMENT", BTN_PRIMARY);
+        JButton btnStatement = createStyledButton("MINI STATEMENT", BTN_INDIGO);
         btnStatement.addActionListener(e -> {
             updateStatementTable();
             showScreenCard("STATEMENT");
@@ -299,13 +301,23 @@ public class ATMFrame extends JFrame {
         title.setForeground(TEXT_DARK);
         panel.add(title, BorderLayout.NORTH);
 
-        // Quick Cash Amounts (in Rupees)
+        // Quick Cash Amounts (in Rupees) with distinct vivid color theme per tier
         JPanel quickGrid = new JPanel(new GridLayout(3, 2, 8, 8));
         quickGrid.setOpaque(false);
 
         int[] quickAmounts = {500, 1000, 2000, 5000, 10000};
-        for (int amt : quickAmounts) {
-            JButton qBtn = createStyledButton("₹" + String.format("%,d", amt), BTN_PRIMARY);
+        Color[] quickColors = {
+                new Color(13, 148, 136),  // Teal
+                new Color(37, 99, 235),   // Royal Blue
+                new Color(79, 70, 229),   // Indigo
+                new Color(147, 51, 234),  // Violet
+                new Color(225, 29, 72)    // Rose
+        };
+
+        for (int i = 0; i < quickAmounts.length; i++) {
+            int amt = quickAmounts[i];
+            Color c = quickColors[i];
+            JButton qBtn = createStyledButton("₹" + String.format("%,d", amt), c);
             qBtn.addActionListener(e -> processWithdrawal(amt));
             quickGrid.add(qBtn);
         }
@@ -521,7 +533,7 @@ public class ATMFrame extends JFrame {
         keypadHeader.setForeground(TEXT_DARK);
         container.add(keypadHeader, BorderLayout.NORTH);
 
-        // 3x4 Grid Keypad
+        // 3x4 Grid Keypad with Vibrant Colorful Buttons
         JPanel grid = new JPanel(new GridLayout(4, 3, 8, 8));
         grid.setOpaque(false);
 
@@ -529,12 +541,12 @@ public class ATMFrame extends JFrame {
         for (String k : keys) {
             JButton btn;
             if ("CLEAR".equals(k)) {
-                btn = createStyledButton("CLEAR", BTN_WARNING);
+                btn = createStyledButton("CLEAR", BTN_WARNING, Color.WHITE);
                 btn.addActionListener(e -> {
                     if (activeKeypadTarget != null) activeKeypadTarget.setText("");
                 });
             } else if ("OK".equals(k)) {
-                btn = createStyledButton("OK", BTN_SUCCESS);
+                btn = createStyledButton("OK", BTN_SUCCESS, Color.WHITE);
                 btn.addActionListener(e -> {
                     if (atmService.isLoggedIn()) {
                         showScreenCard("MENU");
@@ -543,10 +555,14 @@ public class ATMFrame extends JFrame {
                     }
                 });
             } else {
-                btn = createStyledButton(k, PANEL_BG);
-                btn.setForeground(TEXT_DARK);
-                btn.setBorder(new LineBorder(BORDER_DARK, 2, true));
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
+                Color keyBg = new Color(224, 242, 254); // Soft Vibrant Azure
+                Color keyFg = new Color(3, 105, 161);    // Deep Navy
+                btn = createStyledButton(k, keyBg, keyFg);
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                        new LineBorder(new Color(2, 132, 199), 2, true),
+                        new EmptyBorder(8, 12, 8, 12)
+                ));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 22));
                 btn.addActionListener(e -> {
                     if (activeKeypadTarget != null) {
                         activeKeypadTarget.setText(activeKeypadTarget.getText() + k);
@@ -671,18 +687,35 @@ public class ATMFrame extends JFrame {
         JOptionPane.showMessageDialog(this, msg, "ATM Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    private JButton createStyledButton(String text, Color bg) {
+    private JButton createStyledButton(String text, Color bg, Color fg) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBackground(bg);
-        btn.setForeground(Color.WHITE);
+        btn.setForeground(fg);
         btn.setFocusPainted(false);
+        btn.setContentAreaFilled(true);
         btn.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(bg.darker(), 2, true),
                 new EmptyBorder(10, 14, 10, 14)
         ));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Interactive Hover Effect
+        Color hoverBg = bg.equals(PANEL_BG) || bg.equals(new Color(224, 242, 254)) ? new Color(186, 230, 253) : bg.brighter();
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(hoverBg);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(bg);
+            }
+        });
+
         return btn;
+    }
+
+    private JButton createStyledButton(String text, Color bg) {
+        return createStyledButton(text, bg, Color.WHITE);
     }
 
     private void styleTextField(JTextField tf) {
