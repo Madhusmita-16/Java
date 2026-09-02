@@ -8,6 +8,7 @@ A repository of Java projects — showcasing object-oriented software architectu
 
 | Project | Description | Main Tech Stack | Execution Mode |
 |---|---|---|---|
+| **[women-safety-app/](file:///f:/works/Java/women-safety-app)** | Aegis Guard Women Safety Platform with 3D SOS panic button, fake call escape generator, live GPS geofencing, siren alarm, and trusted contacts vault. | Java 17, Swing 2D Graphics, Java Sound API, JUnit 5 | **Desktop App** |
 | **[atm-interface/](file:///f:/works/Java/atm-interface)** | NextGen ATM Terminal with 3D gradient vector keycaps, digital OLED display, Indian Rupee (`₹`) operations, SHA-256 PIN security, cash vault dispenser, and thermal receipts. | Java 17, Swing 2D Graphics, JUnit 5, Maven | **GUI Terminal** & **CLI Console** |
 | **[ai-riddle-game/](file:///f:/works/Java/ai-riddle-game)** | AI Riddle Arena with adaptive difficulty scaling, Spring Boot 3, Spring Security JWT, JPA/H2 database, fuzzy text matching engine, and responsive gaming UI. | Java 17, Spring Boot 3, Spring Security, JPA, JUnit 5 | **Spring Web App** (`localhost:8080`) |
 | **[calculator/](file:///f:/works/Java/calculator)** | Smart calculator application supporting standard arithmetic operations and keyboard listeners. | Java 17, Swing | **Desktop App** |
