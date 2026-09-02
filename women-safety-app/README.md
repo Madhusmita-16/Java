@@ -2,6 +2,8 @@
 
 A master-grade, highly usable, and visually stunning **Women Safety & Emergency Response Platform** engineered in **Java 17**. Features a 3D anti-aliased dark glassmorphic Swing GUI (`SafetyFrame`), a one-touch SOS Emergency Dispatch engine with countdown cancellation protection, a discreet Fake Call escape generator, a Live GPS Safe-Zone Geofence monitor, a high-decibel Audio Siren simulator, an Emergency Contacts Vault, and a 100% passing JUnit 5 test suite.
 
+![Aegis Guard Women Safety Platform UI](assets/women_safety_demo.png)
+
 ---
 
 ## 🌟 Key Application Modules

@@ -16,6 +16,17 @@ A repository of Java projects — showcasing object-oriented software architectu
 
 ---
 
+## 🛡️ Women Safety Master App Demo & Quick Start
+
+![Aegis Guard Women Safety Platform UI](assets/women_safety_demo.png)
+
+### Key Features
+- **One-Touch Emergency SOS**: Glowing red 3D panic button with 3-second cancellation countdown.
+- **Fake Call Escape Generator**: Simulated incoming call popup (*Dad*, *Police*, *Boss*) with ringing audio.
+- **Live GPS Geofence Monitor**: Evaluates location safety in real time (**Green Safe Zone** vs **Red High Risk Zone**).
+
+---
+
 ## 🏦 ATM Interface Demo & Quick Start
 
 ![Nexus Bank NextGen ATM Kiosk Terminal UI](assets/atm_kiosk_demo.png)
