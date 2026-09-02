@@ -2,6 +2,8 @@
 
 A high-tech, production-grade **ATM Kiosk & Banking Terminal System** engineered in **Java 17**. Features a custom 3D anti-aliased metallic Swing GUI (`ATMFrame`), digital OLED display, interactive CLI mode (`ATMConsoleApp`), Indian Rupee (`₹`) multi-currency operations, SHA-256 PIN security, cash vault bill dispenser simulation, and JUnit 5 automated test suite.
 
+![Nexus Bank NextGen ATM Kiosk Terminal UI](assets/atm_kiosk_demo.png)
+
 ---
 
 ## 🌟 Key System Features

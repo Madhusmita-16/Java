@@ -17,6 +17,8 @@ A repository of Java projects — showcasing object-oriented software architectu
 
 ## 🏦 ATM Interface Demo & Quick Start
 
+![Nexus Bank NextGen ATM Kiosk Terminal UI](assets/atm_kiosk_demo.png)
+
 ### Key Features
 - **Indian Rupee (`₹`) Multi-Currency**: Vault inventory loaded with **₹5,00,000.00** in `₹2000`, `₹500`, `₹200`, and `₹100` bill notes.
 - **Security**: SHA-256 hashed PINs with automatic 3-attempt lock protection.
