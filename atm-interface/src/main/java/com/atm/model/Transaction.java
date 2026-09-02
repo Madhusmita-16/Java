@@ -67,7 +67,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return String.format("[%s] %-18s | Amt: $%8.2f | Bal: $%9.2f | %s",
+        return String.format("[%s] %-18s | Amt: ₹%9.2f | Bal: ₹10.2f | %s",
                 getFormattedTimestamp(), type, amount, balanceAfter, description);
     }
 }

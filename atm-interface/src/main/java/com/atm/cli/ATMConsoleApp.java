@@ -3,10 +3,7 @@ package com.atm.cli;
 import com.atm.model.Account;
 import com.atm.model.Transaction;
 import com.atm.service.ATMService;
-import com.atm.service.BankService;
-import com.atm.model.ATMVault;
 
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -23,7 +20,7 @@ public class ATMConsoleApp {
 
     public void start() {
         System.out.println("=================================================");
-        System.out.println("     NEXUS GLOBAL BANK — ATM CONSOLE TERMINAL     ");
+        System.out.println("     NEXUS GLOBAL BANK - ATM CONSOLE TERMINAL    ");
         System.out.println("=================================================");
 
         while (true) {
@@ -65,7 +62,7 @@ public class ATMConsoleApp {
         Account a = atmService.getActiveAccount();
         System.out.println("\n-------------------------------------------------");
         System.out.printf("  ACCOUNT: #%s (%s) | BAL: %s\n",
-                a.getAccountNumber(), a.getHolderName(), formatCurrency(a.getBalance()));
+                a.getAccountNumber(), a.getHolderName(), formatRupees(a.getBalance()));
         System.out.println("-------------------------------------------------");
         System.out.println("1. Check Balance");
         System.out.println("2. Withdraw Cash");
@@ -79,24 +76,24 @@ public class ATMConsoleApp {
         switch (choice) {
             case "1" -> {
                 double bal = atmService.checkBalance();
-                System.out.println("\n-> Current Available Balance: " + formatCurrency(bal));
+                System.out.println("\n-> Current Available Balance: " + formatRupees(bal));
             }
             case "2" -> {
-                System.out.print("Enter Withdrawal Amount ($): ");
+                System.out.print("Enter Withdrawal Amount (₹): ");
                 try {
                     double amt = Double.parseDouble(scanner.nextLine().trim());
                     atmService.withdrawCash(amt);
-                    System.out.println("[SUCCESS] Cash dispensed! New Balance: " + formatCurrency(atmService.getActiveAccount().getBalance()));
+                    System.out.println("[SUCCESS] Cash dispensed! New Balance: " + formatRupees(atmService.getActiveAccount().getBalance()));
                 } catch (Exception ex) {
                     System.out.println("[ERROR] " + ex.getMessage());
                 }
             }
             case "3" -> {
-                System.out.print("Enter Envelope Deposit Amount ($): ");
+                System.out.print("Enter Envelope Deposit Amount (₹): ");
                 try {
                     double amt = Double.parseDouble(scanner.nextLine().trim());
                     atmService.depositCash(amt);
-                    System.out.println("[SUCCESS] Deposit completed! New Balance: " + formatCurrency(atmService.getActiveAccount().getBalance()));
+                    System.out.println("[SUCCESS] Deposit completed! New Balance: " + formatRupees(atmService.getActiveAccount().getBalance()));
                 } catch (Exception ex) {
                     System.out.println("[ERROR] " + ex.getMessage());
                 }
@@ -104,11 +101,11 @@ public class ATMConsoleApp {
             case "4" -> {
                 System.out.print("Enter Recipient Account Number: ");
                 String targetAcc = scanner.nextLine().trim();
-                System.out.print("Enter Transfer Amount ($): ");
+                System.out.print("Enter Transfer Amount (₹): ");
                 try {
                     double amt = Double.parseDouble(scanner.nextLine().trim());
                     atmService.transferFunds(targetAcc, amt);
-                    System.out.println("[SUCCESS] Transfer successful! New Balance: " + formatCurrency(atmService.getActiveAccount().getBalance()));
+                    System.out.println("[SUCCESS] Transfer successful! New Balance: " + formatRupees(atmService.getActiveAccount().getBalance()));
                 } catch (Exception ex) {
                     System.out.println("[ERROR] " + ex.getMessage());
                 }
@@ -128,7 +125,7 @@ public class ATMConsoleApp {
         }
     }
 
-    private String formatCurrency(double val) {
-        return NumberFormat.getCurrencyInstance(Locale.US).format(val);
+    private String formatRupees(double val) {
+        return "₹" + String.format(Locale.US, "%,.2f", val);
     }
 }

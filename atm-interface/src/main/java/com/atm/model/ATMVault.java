@@ -2,24 +2,24 @@ package com.atm.model;
 
 public class ATMVault {
 
+    private int count2000;
+    private int count500;
+    private int count200;
     private int count100;
-    private int count50;
-    private int count20;
-    private int count10;
 
-    public ATMVault(int count100, int count50, int count20, int count10) {
+    public ATMVault(int count2000, int count500, int count200, int count100) {
+        this.count2000 = count2000;
+        this.count500 = count500;
+        this.count200 = count200;
         this.count100 = count100;
-        this.count50 = count50;
-        this.count20 = count20;
-        this.count10 = count10;
     }
 
     public synchronized double getTotalCashAvailable() {
-        return (count100 * 100.0) + (count50 * 50.0) + (count20 * 20.0) + (count10 * 10.0);
+        return (count2000 * 2000.0) + (count500 * 500.0) + (count200 * 200.0) + (count100 * 100.0);
     }
 
     public synchronized boolean canDispense(double amount) {
-        if (amount <= 0 || amount % 10 != 0) {
+        if (amount <= 0 || amount % 100 != 0) {
             return false;
         }
         return amount <= getTotalCashAvailable();
@@ -32,49 +32,49 @@ public class ATMVault {
 
         int remaining = (int) amount;
 
+        int use2000 = Math.min(remaining / 2000, count2000);
+        remaining -= use2000 * 2000;
+
+        int use500 = Math.min(remaining / 500, count500);
+        remaining -= use500 * 500;
+
+        int use200 = Math.min(remaining / 200, count200);
+        remaining -= use200 * 200;
+
         int use100 = Math.min(remaining / 100, count100);
         remaining -= use100 * 100;
 
-        int use50 = Math.min(remaining / 50, count50);
-        remaining -= use50 * 50;
-
-        int use20 = Math.min(remaining / 20, count20);
-        remaining -= use20 * 20;
-
-        int use10 = Math.min(remaining / 10, count10);
-        remaining -= use10 * 10;
-
         if (remaining == 0) {
+            count2000 -= use2000;
+            count500 -= use500;
+            count200 -= use200;
             count100 -= use100;
-            count50 -= use50;
-            count20 -= use20;
-            count10 -= use10;
             return true;
         }
 
         return false;
     }
 
-    public synchronized void replenish(int count100, int count50, int count20, int count10) {
+    public synchronized void replenish(int count2000, int count500, int count200, int count100) {
+        this.count2000 += Math.max(0, count2000);
+        this.count500 += Math.max(0, count500);
+        this.count200 += Math.max(0, count200);
         this.count100 += Math.max(0, count100);
-        this.count50 += Math.max(0, count50);
-        this.count20 += Math.max(0, count20);
-        this.count10 += Math.max(0, count10);
+    }
+
+    public int getCount2000() {
+        return count2000;
+    }
+
+    public int getCount500() {
+        return count500;
+    }
+
+    public int getCount200() {
+        return count200;
     }
 
     public int getCount100() {
         return count100;
-    }
-
-    public int getCount50() {
-        return count50;
-    }
-
-    public int getCount20() {
-        return count20;
-    }
-
-    public int getCount10() {
-        return count10;
     }
 }

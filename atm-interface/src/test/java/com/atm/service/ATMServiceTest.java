@@ -17,7 +17,7 @@ class ATMServiceTest {
     @BeforeEach
     void setUp() {
         bankService = new BankService();
-        atmVault = new ATMVault(100, 100, 100, 100); // $18,000 cash in vault
+        atmVault = new ATMVault(100, 200, 300, 500); // Vault with ₹4,10,000 cash
         atmService = new ATMService(bankService, atmVault);
     }
 
@@ -48,27 +48,27 @@ class ATMServiceTest {
     @DisplayName("Withdrawal - Success reduces balance and vault cash")
     void testWithdrawCash_Success() {
         atmService.login("1001", "1234");
-        double initialBal = atmService.getActiveAccount().getBalance(); // $2500
+        double initialBal = atmService.getActiveAccount().getBalance(); // ₹25,000
 
-        atmService.withdrawCash(200);
+        atmService.withdrawCash(2000);
 
-        assertEquals(initialBal - 200, atmService.getActiveAccount().getBalance());
+        assertEquals(initialBal - 2000, atmService.getActiveAccount().getBalance());
     }
 
     @Test
     @DisplayName("Withdrawal - Fails if amount exceeds account balance")
     void testWithdrawCash_InsufficientBalance() {
-        atmService.login("1003", "1111"); // Alex Johnson has $750.25 balance
+        atmService.login("1003", "1111"); // Alex Johnson has ₹7,500 balance
 
-        assertThrows(IllegalStateException.class, () -> atmService.withdrawCash(900));
+        assertThrows(IllegalStateException.class, () -> atmService.withdrawCash(10000));
     }
 
     @Test
-    @DisplayName("Withdrawal - Fails if amount exceeds daily limit of $1000")
+    @DisplayName("Withdrawal - Fails if amount exceeds daily limit of ₹50,000")
     void testWithdrawCash_ExceedsDailyLimit() {
-        atmService.login("1002", "5678"); // Jane Smith has $10,500 balance
+        atmService.login("1002", "5678"); // Jane Smith has ₹1,50,000 balance
 
-        assertThrows(IllegalArgumentException.class, () -> atmService.withdrawCash(1200));
+        assertThrows(IllegalArgumentException.class, () -> atmService.withdrawCash(60000));
     }
 
     @Test
@@ -77,9 +77,9 @@ class ATMServiceTest {
         atmService.login("1001", "1234");
         double initialBal = atmService.getActiveAccount().getBalance();
 
-        atmService.depositCash(500);
+        atmService.depositCash(5000);
 
-        assertEquals(initialBal + 500, atmService.getActiveAccount().getBalance());
+        assertEquals(initialBal + 5000, atmService.getActiveAccount().getBalance());
     }
 
     @Test
@@ -92,9 +92,9 @@ class ATMServiceTest {
         double senderInit = sender.getBalance();
         double recipientInit = recipient.getBalance();
 
-        atmService.transferFunds("1002", 300);
+        atmService.transferFunds("1002", 3000);
 
-        assertEquals(senderInit - 300, sender.getBalance());
-        assertEquals(recipientInit + 300, recipient.getBalance());
+        assertEquals(senderInit - 3000, sender.getBalance());
+        assertEquals(recipientInit + 3000, recipient.getBalance());
     }
 }

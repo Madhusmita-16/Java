@@ -7,10 +7,8 @@ import com.atm.service.ATMService;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -23,7 +21,6 @@ public class ATMFrame extends JFrame {
 
     // Screen LCD components
     private JLabel lcdStatusLabel;
-    private JTextArea lcdMessageArea;
 
     // Login Screen inputs
     private JTextField loginAccInput;
@@ -37,35 +34,38 @@ public class ATMFrame extends JFrame {
     // Keypad Active Field reference
     private JTextField activeKeypadTarget;
 
-    // Colors
-    private static final Color BG_DARK = new Color(13, 17, 23);
-    private static final Color PANEL_BG = new Color(22, 27, 34);
-    private static final Color LCD_BG = new Color(9, 13, 22);
-    private static final Color ACCENT_CYAN = new Color(88, 166, 255);
-    private static final Color ACCENT_GREEN = new Color(46, 160, 67);
-    private static final Color ACCENT_GOLD = new Color(210, 153, 34);
-    private static final Color ACCENT_RED = new Color(248, 81, 73);
-    private static final Color TEXT_LIGHT = new Color(240, 246, 252);
-    private static final Color TEXT_MUTED = new Color(139, 148, 158);
+    // High Contrast Light Theme Palette
+    private static final Color BG_OUTER = new Color(226, 232, 240);       // Crisp Light Slate
+    private static final Color PANEL_BG = new Color(255, 255, 255);       // Pure White
+    private static final Color LCD_BG = new Color(248, 250, 252);         // Off-White LCD
+    private static final Color BORDER_DARK = new Color(71, 85, 105);       // Dark Slate Border
+    private static final Color TEXT_DARK = new Color(15, 23, 42);          // Deep Charcoal Text
+    private static final Color TEXT_MUTED = new Color(71, 85, 105);        // Slate Muted Text
+
+    private static final Color BTN_PRIMARY = new Color(30, 64, 175);       // Deep Royal Blue
+    private static final Color BTN_SUCCESS = new Color(21, 128, 61);       // Deep Green
+    private static final Color BTN_WARNING = new Color(180, 83, 9);        // Deep Amber/Gold
+    private static final Color BTN_DANGER = new Color(185, 28, 28);        // Deep Red
+    private static final Color BTN_PURPLE = new Color(109, 40, 217);       // Deep Purple
 
     public ATMFrame(ATMService atmService) {
         this.atmService = atmService;
         this.cardLayout = new CardLayout();
         this.mainScreenPanel = new JPanel(cardLayout);
 
-        setTitle("NEXUS BANK — NextGen ATM Terminal");
-        setSize(950, 720);
-        setMinimumSize(new Dimension(850, 650));
+        setTitle("NEXUS BANK - NextGen ATM Terminal");
+        setSize(960, 740);
+        setMinimumSize(new Dimension(860, 660));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        getContentPane().setBackground(BG_DARK);
+        getContentPane().setBackground(BG_OUTER);
 
         initUI();
     }
 
     private void initUI() {
         JPanel rootPanel = new JPanel(new BorderLayout(15, 15));
-        rootPanel.setBackground(BG_DARK);
+        rootPanel.setBackground(BG_OUTER);
         rootPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // --- Top Header ---
@@ -76,11 +76,11 @@ public class ATMFrame extends JFrame {
         JPanel centerPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         centerPanel.setOpaque(false);
 
-        // Left Column: Electronic LCD Screen Panel
+        // Left Column: High Contrast LCD Screen Panel
         JPanel lcdScreenContainer = createLCDScreenPanel();
         centerPanel.add(lcdScreenContainer);
 
-        // Right Column: Tactile Hardware Keypad & Quick Cash Panel
+        // Right Column: Tactile Hardware Keypad Panel
         JPanel keypadContainer = createKeypadPanel();
         centerPanel.add(keypadContainer);
 
@@ -100,16 +100,16 @@ public class ATMFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(PANEL_BG);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(48, 54, 61), 1, true),
+                new LineBorder(BORDER_DARK, 2, true),
                 new EmptyBorder(12, 20, 12, 20)
         ));
 
-        JLabel titleLabel = new JLabel("🏦 NEXUS GLOBAL BANK ATM");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titleLabel.setForeground(ACCENT_CYAN);
+        JLabel titleLabel = new JLabel("NEXUS GLOBAL BANK ATM");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        titleLabel.setForeground(BTN_PRIMARY);
 
-        JLabel subTitleLabel = new JLabel("Terminal ID: #ATM-8092 • Secure 256-bit Encrypted Session");
-        subTitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JLabel subTitleLabel = new JLabel("Terminal ID: #ATM-8092 | Secure 256-bit Encrypted Session");
+        subTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         subTitleLabel.setForeground(TEXT_MUTED);
 
         panel.add(titleLabel, BorderLayout.WEST);
@@ -121,15 +121,21 @@ public class ATMFrame extends JFrame {
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(LCD_BG);
         container.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ACCENT_CYAN, 2, true),
+                new LineBorder(BTN_PRIMARY, 3, true),
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // LCD Status Header
-        lcdStatusLabel = new JLabel("● SYSTEM READY — INSERT ACCOUNT & PIN", SwingConstants.CENTER);
-        lcdStatusLabel.setFont(new Font("Monospaced", Font.BOLD, 13));
-        lcdStatusLabel.setForeground(ACCENT_GREEN);
-        container.add(lcdStatusLabel, BorderLayout.NORTH);
+        // LCD Status Header Bar
+        JPanel statusHeaderBar = new JPanel(new BorderLayout());
+        statusHeaderBar.setBackground(TEXT_DARK);
+        statusHeaderBar.setBorder(new EmptyBorder(6, 10, 6, 10));
+
+        lcdStatusLabel = new JLabel("SYSTEM READY - INSERT ACCOUNT NUMBER & PIN", SwingConstants.CENTER);
+        lcdStatusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lcdStatusLabel.setForeground(Color.WHITE);
+        statusHeaderBar.add(lcdStatusLabel, BorderLayout.CENTER);
+
+        container.add(statusHeaderBar, BorderLayout.NORTH);
 
         // Screen Cards
         mainScreenPanel.setOpaque(false);
@@ -153,14 +159,14 @@ public class ATMFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel welcomeTitle = new JLabel("Welcome to Nexus ATM", SwingConstants.CENTER);
-        welcomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        welcomeTitle.setForeground(TEXT_LIGHT);
+        welcomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        welcomeTitle.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         panel.add(welcomeTitle, gbc);
 
-        JLabel subHint = new JLabel("Demo Acc: 1001 (PIN: 1234) | Acc: 1002 (PIN: 5678)", SwingConstants.CENTER);
-        subHint.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        subHint.setForeground(ACCENT_GOLD);
+        JLabel subHint = new JLabel("Demo Accounts: 1001 (PIN: 1234) | 1002 (PIN: 5678)", SwingConstants.CENTER);
+        subHint.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        subHint.setForeground(BTN_WARNING);
         gbc.gridy = 1;
         panel.add(subHint, gbc);
 
@@ -168,7 +174,8 @@ public class ATMFrame extends JFrame {
 
         // Account Number Input
         JLabel accLabel = new JLabel("Account Number:");
-        accLabel.setForeground(TEXT_LIGHT);
+        accLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        accLabel.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(accLabel, gbc);
 
@@ -183,7 +190,8 @@ public class ATMFrame extends JFrame {
 
         // PIN Input
         JLabel pinLabel = new JLabel("4-Digit PIN:");
-        pinLabel.setForeground(TEXT_LIGHT);
+        pinLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        pinLabel.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 3;
         panel.add(pinLabel, gbc);
 
@@ -197,7 +205,7 @@ public class ATMFrame extends JFrame {
         panel.add(loginPinInput, gbc);
 
         // Submit Login Button
-        JButton loginBtn = createStyledButton("AUTHENTICATE & ENTER", ACCENT_CYAN);
+        JButton loginBtn = createStyledButton("AUTHENTICATE AND ENTER", BTN_PRIMARY);
         loginBtn.addActionListener(e -> handleLogin());
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2; gbc.insets = new Insets(15, 8, 8, 8);
         panel.add(loginBtn, gbc);
@@ -210,25 +218,25 @@ public class ATMFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setOpaque(false);
 
-        // User Info Header
+        // User Info Header Card
         JPanel infoPanel = new JPanel(new GridLayout(3, 1, 4, 4));
-        infoPanel.setOpaque(false);
+        infoPanel.setBackground(PANEL_BG);
         infoPanel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(48, 54, 61), 1, true),
-                new EmptyBorder(8, 12, 8, 12)
+                new LineBorder(BORDER_DARK, 2, true),
+                new EmptyBorder(10, 15, 10, 15)
         ));
 
         dashWelcomeLabel = new JLabel("Welcome, Valued Customer");
         dashWelcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        dashWelcomeLabel.setForeground(TEXT_LIGHT);
+        dashWelcomeLabel.setForeground(TEXT_DARK);
 
         dashAccNumLabel = new JLabel("Account: #XXXX");
-        dashAccNumLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        dashAccNumLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
         dashAccNumLabel.setForeground(TEXT_MUTED);
 
-        dashBalanceLabel = new JLabel("Available Balance: $0.00");
-        dashBalanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        dashBalanceLabel.setForeground(ACCENT_GREEN);
+        dashBalanceLabel = new JLabel("Available Balance: ₹0.00");
+        dashBalanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        dashBalanceLabel.setForeground(BTN_SUCCESS);
 
         infoPanel.add(dashWelcomeLabel);
         infoPanel.add(dashAccNumLabel);
@@ -240,35 +248,35 @@ public class ATMFrame extends JFrame {
         JPanel grid = new JPanel(new GridLayout(3, 2, 10, 10));
         grid.setOpaque(false);
 
-        JButton btnWithdraw = createStyledButton("💵 WITHDRAW CASH", ACCENT_CYAN);
+        JButton btnWithdraw = createStyledButton("WITHDRAW CASH", BTN_PRIMARY);
         btnWithdraw.addActionListener(e -> showScreenCard("WITHDRAW"));
 
-        JButton btnDeposit = createStyledButton("📥 DEPOSIT CASH", ACCENT_GREEN);
+        JButton btnDeposit = createStyledButton("DEPOSIT CASH", BTN_SUCCESS);
         btnDeposit.addActionListener(e -> showScreenCard("DEPOSIT"));
 
-        JButton btnTransfer = createStyledButton("🔄 FUND TRANSFER", ACCENT_GOLD);
+        JButton btnTransfer = createStyledButton("FUND TRANSFER", BTN_WARNING);
         btnTransfer.addActionListener(e -> showScreenCard("TRANSFER"));
 
-        JButton btnStatement = createStyledButton("📋 MINI STATEMENT", ACCENT_CYAN);
+        JButton btnStatement = createStyledButton("MINI STATEMENT", BTN_PRIMARY);
         btnStatement.addActionListener(e -> {
             updateStatementTable();
             showScreenCard("STATEMENT");
         });
 
-        JButton btnBalance = createStyledButton("🔍 CHECK BALANCE", new Color(137, 87, 229));
+        JButton btnBalance = createStyledButton("CHECK BALANCE", BTN_PURPLE);
         btnBalance.addActionListener(e -> {
             double bal = atmService.checkBalance();
             updateDashboardInfo();
             JOptionPane.showMessageDialog(this,
-                    "Current Available Balance: " + formatCurrency(bal),
+                    "Current Available Balance: " + formatRupees(bal),
                     "Balance Inquiry", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        JButton btnLogout = createStyledButton("🔴 EXIT / LOGOUT", ACCENT_RED);
+        JButton btnLogout = createStyledButton("EXIT / LOGOUT", BTN_DANGER);
         btnLogout.addActionListener(e -> {
             atmService.logout();
             showScreenCard("LOGIN");
-            updateLcdStatus("● SYSTEM READY — INSERT ACCOUNT & PIN", ACCENT_GREEN);
+            updateLcdStatus("SYSTEM READY - INSERT ACCOUNT NUMBER & PIN", Color.WHITE);
         });
 
         grid.add(btnWithdraw);
@@ -287,17 +295,17 @@ public class ATMFrame extends JFrame {
         panel.setOpaque(false);
 
         JLabel title = new JLabel("Fast Cash Withdrawal", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        title.setForeground(TEXT_LIGHT);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        title.setForeground(TEXT_DARK);
         panel.add(title, BorderLayout.NORTH);
 
-        // Quick Cash Amounts
+        // Quick Cash Amounts (in Rupees)
         JPanel quickGrid = new JPanel(new GridLayout(3, 2, 8, 8));
         quickGrid.setOpaque(false);
 
-        int[] quickAmounts = {20, 50, 100, 200, 500};
+        int[] quickAmounts = {500, 1000, 2000, 5000, 10000};
         for (int amt : quickAmounts) {
-            JButton qBtn = createStyledButton("$" + amt, ACCENT_CYAN);
+            JButton qBtn = createStyledButton("₹" + String.format("%,d", amt), BTN_PRIMARY);
             qBtn.addActionListener(e -> processWithdrawal(amt));
             quickGrid.add(qBtn);
         }
@@ -308,8 +316,9 @@ public class ATMFrame extends JFrame {
         JPanel customRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         customRow.setOpaque(false);
 
-        JLabel customLabel = new JLabel("Custom Amount ($):");
-        customLabel.setForeground(TEXT_LIGHT);
+        JLabel customLabel = new JLabel("Custom Amount (₹):");
+        customLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        customLabel.setForeground(TEXT_DARK);
 
         JTextField customInput = new JTextField(8);
         styleTextField(customInput);
@@ -317,7 +326,7 @@ public class ATMFrame extends JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) { activeKeypadTarget = customInput; }
         });
 
-        JButton customBtn = createStyledButton("WITHDRAW", ACCENT_GREEN);
+        JButton customBtn = createStyledButton("WITHDRAW", BTN_SUCCESS);
         customBtn.addActionListener(e -> {
             try {
                 double val = Double.parseDouble(customInput.getText().trim());
@@ -328,7 +337,7 @@ public class ATMFrame extends JFrame {
             }
         });
 
-        JButton backBtn = createStyledButton("BACK", ACCENT_RED);
+        JButton backBtn = createStyledButton("BACK", BTN_DANGER);
         backBtn.addActionListener(e -> showScreenCard("MENU"));
 
         customRow.add(customLabel);
@@ -348,13 +357,14 @@ public class ATMFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel("Cash Deposit Simulation", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        title.setForeground(ACCENT_GREEN);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setForeground(BTN_SUCCESS);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         panel.add(title, gbc);
 
-        JLabel amtLabel = new JLabel("Deposit Amount ($):");
-        amtLabel.setForeground(TEXT_LIGHT);
+        JLabel amtLabel = new JLabel("Deposit Amount (₹):");
+        amtLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        amtLabel.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
         panel.add(amtLabel, gbc);
 
@@ -366,7 +376,7 @@ public class ATMFrame extends JFrame {
         gbc.gridx = 1;
         panel.add(depInput, gbc);
 
-        JButton depBtn = createStyledButton("DEPOSIT CASH ENVELOPE", ACCENT_GREEN);
+        JButton depBtn = createStyledButton("DEPOSIT CASH ENVELOPE", BTN_SUCCESS);
         depBtn.addActionListener(e -> {
             try {
                 double amt = Double.parseDouble(depInput.getText().trim());
@@ -380,7 +390,7 @@ public class ATMFrame extends JFrame {
             }
         });
 
-        JButton backBtn = createStyledButton("CANCEL", ACCENT_RED);
+        JButton backBtn = createStyledButton("CANCEL", BTN_DANGER);
         backBtn.addActionListener(e -> showScreenCard("MENU"));
 
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
@@ -400,13 +410,14 @@ public class ATMFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel("Fund Transfer to Account", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        title.setForeground(ACCENT_GOLD);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setForeground(BTN_WARNING);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         panel.add(title, gbc);
 
         JLabel targetLabel = new JLabel("Recipient Account #:");
-        targetLabel.setForeground(TEXT_LIGHT);
+        targetLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        targetLabel.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
         panel.add(targetLabel, gbc);
 
@@ -418,8 +429,9 @@ public class ATMFrame extends JFrame {
         gbc.gridx = 1;
         panel.add(targetInput, gbc);
 
-        JLabel amtLabel = new JLabel("Transfer Amount ($):");
-        amtLabel.setForeground(TEXT_LIGHT);
+        JLabel amtLabel = new JLabel("Transfer Amount (₹):");
+        amtLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        amtLabel.setForeground(TEXT_DARK);
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(amtLabel, gbc);
 
@@ -431,7 +443,7 @@ public class ATMFrame extends JFrame {
         gbc.gridx = 1;
         panel.add(transferAmtInput, gbc);
 
-        JButton sendBtn = createStyledButton("SEND TRANSFER NOW", ACCENT_GOLD);
+        JButton sendBtn = createStyledButton("SEND TRANSFER NOW", BTN_WARNING);
         sendBtn.addActionListener(e -> {
             try {
                 String targetAcc = targetInput.getText().trim();
@@ -447,7 +459,7 @@ public class ATMFrame extends JFrame {
             }
         });
 
-        JButton backBtn = createStyledButton("CANCEL", ACCENT_RED);
+        JButton backBtn = createStyledButton("CANCEL", BTN_DANGER);
         backBtn.addActionListener(e -> showScreenCard("MENU"));
 
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
@@ -466,29 +478,30 @@ public class ATMFrame extends JFrame {
         panel.setOpaque(false);
 
         JLabel title = new JLabel("Recent Transaction History (Mini Statement)", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        title.setForeground(TEXT_LIGHT);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        title.setForeground(TEXT_DARK);
         panel.add(title, BorderLayout.NORTH);
 
-        String[] cols = {"Date / Time", "Type", "Amount ($)", "Balance ($)"};
+        String[] cols = {"Date / Time", "Type", "Amount (₹)", "Balance (₹)"};
         statementTableModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int row, int column) { return false; }
         };
 
         JTable table = new JTable(statementTableModel);
-        table.setBackground(PANEL_BG);
-        table.setForeground(TEXT_LIGHT);
-        table.setGridColor(new Color(48, 54, 61));
-        table.getTableHeader().setBackground(new Color(33, 38, 45));
-        table.getTableHeader().setForeground(ACCENT_CYAN);
-        table.setRowHeight(22);
+        table.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.setBackground(Color.WHITE);
+        table.setForeground(TEXT_DARK);
+        table.setGridColor(new Color(203, 213, 225));
+        table.getTableHeader().setBackground(TEXT_DARK);
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.setRowHeight(24);
 
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setOpaque(false);
-        scroll.getViewport().setBackground(PANEL_BG);
+        scroll.getViewport().setBackground(Color.WHITE);
         panel.add(scroll, BorderLayout.CENTER);
 
-        JButton backBtn = createStyledButton("RETURN TO MAIN MENU", ACCENT_CYAN);
+        JButton backBtn = createStyledButton("RETURN TO MAIN MENU", BTN_PRIMARY);
         backBtn.addActionListener(e -> showScreenCard("MENU"));
         panel.add(backBtn, BorderLayout.SOUTH);
 
@@ -499,13 +512,13 @@ public class ATMFrame extends JFrame {
         JPanel container = new JPanel(new BorderLayout(10, 10));
         container.setBackground(PANEL_BG);
         container.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(48, 54, 61), 1, true),
+                new LineBorder(BORDER_DARK, 2, true),
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
         JLabel keypadHeader = new JLabel("TOUCH KEYPAD", SwingConstants.CENTER);
-        keypadHeader.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        keypadHeader.setForeground(TEXT_MUTED);
+        keypadHeader.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        keypadHeader.setForeground(TEXT_DARK);
         container.add(keypadHeader, BorderLayout.NORTH);
 
         // 3x4 Grid Keypad
@@ -516,12 +529,12 @@ public class ATMFrame extends JFrame {
         for (String k : keys) {
             JButton btn;
             if ("CLEAR".equals(k)) {
-                btn = createStyledButton("CLEAR", ACCENT_GOLD);
+                btn = createStyledButton("CLEAR", BTN_WARNING);
                 btn.addActionListener(e -> {
                     if (activeKeypadTarget != null) activeKeypadTarget.setText("");
                 });
             } else if ("OK".equals(k)) {
-                btn = createStyledButton("OK", ACCENT_GREEN);
+                btn = createStyledButton("OK", BTN_SUCCESS);
                 btn.addActionListener(e -> {
                     if (atmService.isLoggedIn()) {
                         showScreenCard("MENU");
@@ -530,8 +543,10 @@ public class ATMFrame extends JFrame {
                     }
                 });
             } else {
-                btn = createStyledButton(k, TEXT_LIGHT);
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+                btn = createStyledButton(k, PANEL_BG);
+                btn.setForeground(TEXT_DARK);
+                btn.setBorder(new LineBorder(BORDER_DARK, 2, true));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
                 btn.addActionListener(e -> {
                     if (activeKeypadTarget != null) {
                         activeKeypadTarget.setText(activeKeypadTarget.getText() + k);
@@ -544,9 +559,9 @@ public class ATMFrame extends JFrame {
         container.add(grid, BorderLayout.CENTER);
 
         // Bottom Vault Cash Info
-        JLabel vaultInfo = new JLabel("ATM Vault Cash: $50,000.00 Available", SwingConstants.CENTER);
-        vaultInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        vaultInfo.setForeground(ACCENT_GREEN);
+        JLabel vaultInfo = new JLabel("ATM Vault Cash: ₹5,00,000.00 Available", SwingConstants.CENTER);
+        vaultInfo.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        vaultInfo.setForeground(BTN_SUCCESS);
         container.add(vaultInfo, BorderLayout.SOUTH);
 
         return container;
@@ -555,8 +570,8 @@ public class ATMFrame extends JFrame {
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
-        JLabel foot = new JLabel("Powered by Nexus Bank ATM Core v1.0 • 24/7 Customer Hotline: 1-800-555-NEXUS", SwingConstants.CENTER);
-        foot.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        JLabel foot = new JLabel("Powered by Nexus Bank ATM Core v1.0 | 24/7 Customer Hotline: 1800-555-NEXUS", SwingConstants.CENTER);
+        foot.setFont(new Font("Segoe UI", Font.BOLD, 12));
         foot.setForeground(TEXT_MUTED);
         panel.add(foot, BorderLayout.CENTER);
         return panel;
@@ -570,9 +585,9 @@ public class ATMFrame extends JFrame {
             atmService.login(acc, pin);
             updateDashboardInfo();
             showScreenCard("MENU");
-            updateLcdStatus("● SESSION ACTIVE — ACCOUNT #" + acc, ACCENT_GREEN);
+            updateLcdStatus("SESSION ACTIVE - ACCOUNT #" + acc, Color.WHITE);
         } catch (Exception ex) {
-            updateLcdStatus("✖ AUTHENTICATION FAILED: " + ex.getMessage(), ACCENT_RED);
+            updateLcdStatus("AUTHENTICATION FAILED: " + ex.getMessage(), Color.WHITE);
             showErrorDialog(ex.getMessage());
         }
     }
@@ -593,7 +608,7 @@ public class ATMFrame extends JFrame {
         Account acc = atmService.getActiveAccount();
         dashWelcomeLabel.setText("Welcome, " + acc.getHolderName() + " (" + acc.getAccountType() + ")");
         dashAccNumLabel.setText("Account Number: #" + acc.getAccountNumber());
-        dashBalanceLabel.setText("Available Balance: " + formatCurrency(acc.getBalance()));
+        dashBalanceLabel.setText("Available Balance: " + formatRupees(acc.getBalance()));
     }
 
     private void updateStatementTable() {
@@ -605,8 +620,8 @@ public class ATMFrame extends JFrame {
             statementTableModel.addRow(new Object[]{
                     t.getFormattedTimestamp(),
                     t.getType(),
-                    formatCurrency(t.getAmount()),
-                    formatCurrency(t.getBalanceAfter())
+                    formatRupees(t.getAmount()),
+                    formatRupees(t.getBalanceAfter())
             });
         }
     }
@@ -624,18 +639,18 @@ public class ATMFrame extends JFrame {
         receipt.append(String.format("Date / Time  : %s\n", java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
         receipt.append("-----------------------------------------\n");
         receipt.append(String.format("Operation    : %s\n", type));
-        receipt.append(String.format("Amount       : %s\n", formatCurrency(amount)));
+        receipt.append(String.format("Amount       : %s\n", formatRupees(amount)));
         if (targetAcc != null) {
             receipt.append(String.format("Target Acc # : %s\n", targetAcc));
         }
-        receipt.append(String.format("New Balance  : %s\n", formatCurrency(acc.getBalance())));
+        receipt.append(String.format("New Balance  : %s\n", formatRupees(acc.getBalance())));
         receipt.append("-----------------------------------------\n");
         receipt.append("      Thank you for banking with Nexus!   \n");
         receipt.append("=========================================\n");
 
         JTextArea area = new JTextArea(receipt.toString());
-        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        area.setBackground(new Color(250, 250, 210));
+        area.setFont(new Font("Monospaced", Font.BOLD, 13));
+        area.setBackground(new Color(254, 252, 232));
         area.setForeground(Color.BLACK);
         area.setEditable(false);
         area.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -658,30 +673,30 @@ public class ATMFrame extends JFrame {
 
     private JButton createStyledButton(String text, Color bg) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(bg.darker(), 1, true),
-                new EmptyBorder(8, 12, 8, 12)
+                new LineBorder(bg.darker(), 2, true),
+                new EmptyBorder(10, 14, 10, 14)
         ));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
     }
 
     private void styleTextField(JTextField tf) {
-        tf.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        tf.setBackground(PANEL_BG);
-        tf.setForeground(TEXT_LIGHT);
-        tf.setCaretColor(ACCENT_CYAN);
+        tf.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        tf.setBackground(Color.WHITE);
+        tf.setForeground(TEXT_DARK);
+        tf.setCaretColor(BTN_PRIMARY);
         tf.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ACCENT_CYAN, 1),
-                new EmptyBorder(4, 8, 4, 8)
+                new LineBorder(BORDER_DARK, 2),
+                new EmptyBorder(6, 10, 6, 10)
         ));
     }
 
-    private String formatCurrency(double val) {
-        return NumberFormat.getCurrencyInstance(Locale.US).format(val);
+    private String formatRupees(double val) {
+        return "₹" + String.format(Locale.US, "%,.2f", val);
     }
 }

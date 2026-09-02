@@ -16,11 +16,11 @@ public class BankService {
     }
 
     private void seedDefaultAccounts() {
-        // Pre-seeded demo bank accounts
-        registerAccount(new Account("1001", "1234", "John Doe", Account.AccountType.CHECKING, 2500.00));
-        registerAccount(new Account("1002", "5678", "Jane Smith", Account.AccountType.SAVINGS, 10500.50));
-        registerAccount(new Account("1003", "1111", "Alex Johnson", Account.AccountType.CHECKING, 750.25));
-        registerAccount(new Account("9999", "9999", "ATM Administrator", Account.AccountType.SAVINGS, 50000.00));
+        // Pre-seeded demo bank accounts (Balances in Indian Rupees - INR)
+        registerAccount(new Account("1001", "1234", "John Doe", Account.AccountType.CHECKING, 25000.00));
+        registerAccount(new Account("1002", "5678", "Jane Smith", Account.AccountType.SAVINGS, 150000.00));
+        registerAccount(new Account("1003", "1111", "Alex Johnson", Account.AccountType.CHECKING, 7500.00));
+        registerAccount(new Account("9999", "9999", "ATM Administrator", Account.AccountType.SAVINGS, 500000.00));
     }
 
     public void registerAccount(Account account) {

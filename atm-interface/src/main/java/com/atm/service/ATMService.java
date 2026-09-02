@@ -12,7 +12,7 @@ public class ATMService {
     private final ATMVault atmVault;
     private Account activeAccount;
     private double sessionWithdrawnTotal = 0.0;
-    public static final double DAILY_WITHDRAWAL_LIMIT = 1000.0;
+    public static final double DAILY_WITHDRAWAL_LIMIT = 50000.0;
 
     public ATMService(BankService bankService, ATMVault atmVault) {
         this.bankService = bankService;
@@ -50,21 +50,21 @@ public class ATMService {
     public synchronized void withdrawCash(double amount) {
         Account account = getActiveAccount();
 
-        if (amount <= 0 || amount % 10 != 0) {
-            throw new IllegalArgumentException("Withdrawal amount must be a multiple of $10.");
+        if (amount <= 0 || amount % 100 != 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be a multiple of ₹100.");
         }
 
         if (sessionWithdrawnTotal + amount > DAILY_WITHDRAWAL_LIMIT) {
             double remainingLimit = DAILY_WITHDRAWAL_LIMIT - sessionWithdrawnTotal;
-            throw new IllegalArgumentException("Daily withdrawal limit exceeded ($1,000.00 max). Remaining limit: $" + String.format("%.2f", Math.max(0, remainingLimit)));
+            throw new IllegalArgumentException("Daily withdrawal limit exceeded (₹50,000.00 max). Remaining limit: ₹" + String.format("%.2f", Math.max(0, remainingLimit)));
         }
 
         if (amount > account.getBalance()) {
-            throw new IllegalStateException("Insufficient account balance. Available: $" + String.format("%.2f", account.getBalance()));
+            throw new IllegalStateException("Insufficient account balance. Available: ₹" + String.format("%.2f", account.getBalance()));
         }
 
         if (!atmVault.canDispense(amount)) {
-            throw new IllegalStateException("ATM Vault cannot dispense this exact amount with current bill inventory. Available Vault Cash: $" + String.format("%.2f", atmVault.getTotalCashAvailable()));
+            throw new IllegalStateException("ATM Vault cannot dispense this exact amount with current bill inventory. Available Vault Cash: ₹" + String.format("%.2f", atmVault.getTotalCashAvailable()));
         }
 
         // Perform withdrawal from account
@@ -89,8 +89,8 @@ public class ATMService {
         }
 
         account.deposit(amount, "ATM Envelope Cash Deposit");
-        // Replenish vault dynamically
-        atmVault.replenish((int) (amount / 100), 0, 0, 0);
+        // Replenish vault dynamically with 500 notes
+        atmVault.replenish(0, (int) (amount / 500), 0, 0);
     }
 
     public void transferFunds(String targetAccountNumber, double amount) {
