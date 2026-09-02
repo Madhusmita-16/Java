@@ -4,6 +4,7 @@ import com.safety.model.Contact;
 import com.safety.model.IncidentRecord;
 import com.safety.model.SafeZone;
 import com.safety.service.SafetyService;
+import com.safety.ui.components.GpsMapCanvas;
 import com.safety.ui.components.SafetyButton;
 
 import javax.swing.*;
@@ -12,7 +13,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class SafetyFrame extends JFrame {
@@ -30,11 +30,16 @@ public class SafetyFrame extends JFrame {
     private Timer sosCountdownTimer;
     private int countdownSeconds = 3;
 
+    // Fake Call Components
+    private JComboBox<Contact> fakeCallContactCombo;
+    private JTextField fakeCallerNameInput;
+    private JTextField fakeCallerPhoneInput;
+
     // GPS Location Card
+    private GpsMapCanvas gpsMapCanvas;
     private JLabel gpsCoordsLabel;
     private JLabel gpsSpeedLabel;
     private JLabel safeZoneNameLabel;
-    private JLabel safeZoneLevelLabel;
     private JLabel safeZoneDescLabel;
 
     // Table Models
@@ -158,7 +163,10 @@ public class SafetyFrame extends JFrame {
         btnSos.addActionListener(e -> showCard("SOS"));
 
         SafetyButton btnFakeCall = new SafetyButton("FAKE CALL ESCAPE", BTN_WARNING);
-        btnFakeCall.addActionListener(e -> showCard("FAKE_CALL"));
+        btnFakeCall.addActionListener(e -> {
+            populateFakeCallContactsCombo();
+            showCard("FAKE_CALL");
+        });
 
         SafetyButton btnGps = new SafetyButton("LIVE GPS & SAFE ZONES", BTN_SUCCESS);
         btnGps.addActionListener(e -> showCard("GPS"));
@@ -218,7 +226,6 @@ public class SafetyFrame extends JFrame {
         gbc.gridy = 2;
         card.add(countdownLabel, gbc);
 
-        // Huge Central SOS Button
         SafetyButton mainSosBtn = new SafetyButton("EMERGENCY SOS", BTN_SOS_RED, Color.WHITE, 24);
         mainSosBtn.setFont(new Font("Segoe UI", Font.BOLD, 26));
         mainSosBtn.setPreferredSize(new Dimension(320, 100));
@@ -227,7 +234,6 @@ public class SafetyFrame extends JFrame {
         gbc.gridy = 3; gbc.insets = new Insets(20, 10, 20, 10);
         card.add(mainSosBtn, gbc);
 
-        // Cancel SOS Button
         SafetyButton cancelSosBtn = new SafetyButton("CANCEL / DEACTIVATE ALARM", BTN_SUCCESS);
         cancelSosBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         cancelSosBtn.addActionListener(e -> cancelSosAlert());
@@ -292,7 +298,7 @@ public class SafetyFrame extends JFrame {
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel("DISCREET FAKE CALL ESCAPE GENERATOR", SwingConstants.CENTER);
@@ -301,42 +307,95 @@ public class SafetyFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         card.add(title, gbc);
 
-        JLabel sub = new JLabel("Simulate an incoming phone call to give you a natural excuse to exit uncomfortable situations.", SwingConstants.CENTER);
+        JLabel sub = new JLabel("Select a contact or edit Dad's phone number below to trigger an instant incoming call modal.", SwingConstants.CENTER);
         sub.setFont(new Font("Segoe UI", Font.BOLD, 12));
         sub.setForeground(TEXT_MUTED);
         gbc.gridy = 1;
         card.add(sub, gbc);
 
-        JLabel callerLabel = new JLabel("Caller Identity:");
+        gbc.gridwidth = 1;
+
+        // Select Contact Dropdown
+        JLabel selectLabel = new JLabel("Select Vault Contact:");
+        selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        selectLabel.setForeground(TEXT_BRIGHT);
+        gbc.gridx = 0; gbc.gridy = 2;
+        card.add(selectLabel, gbc);
+
+        fakeCallContactCombo = new JComboBox<>();
+        fakeCallContactCombo.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        fakeCallContactCombo.setBackground(PANEL_DARK);
+        fakeCallContactCombo.setForeground(TEXT_BRIGHT);
+        populateFakeCallContactsCombo();
+
+        fakeCallContactCombo.addActionListener(e -> {
+            Contact selected = (Contact) fakeCallContactCombo.getSelectedItem();
+            if (selected != null) {
+                fakeCallerNameInput.setText(selected.getName());
+                fakeCallerPhoneInput.setText(selected.getPhoneNumber());
+            }
+        });
+
+        gbc.gridx = 1;
+        card.add(fakeCallContactCombo, gbc);
+
+        // Caller Name Input
+        JLabel callerLabel = new JLabel("Caller Name:");
         callerLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         callerLabel.setForeground(TEXT_BRIGHT);
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.gridy = 3;
         card.add(callerLabel, gbc);
 
-        String[] callers = {"Dad", "Police Inspector Vijay", "Office Boss", "Home Security Operator", "Dr. Sharma"};
-        JComboBox<String> callerCombo = new JComboBox<>(callers);
-        callerCombo.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        callerCombo.setBackground(PANEL_DARK);
-        callerCombo.setForeground(TEXT_BRIGHT);
+        fakeCallerNameInput = new JTextField("Dad", 15);
+        styleTextField(fakeCallerNameInput);
         gbc.gridx = 1;
-        card.add(callerCombo, gbc);
+        card.add(fakeCallerNameInput, gbc);
+
+        // Caller Phone Input
+        JLabel phoneLabel = new JLabel("Caller Phone Number:");
+        phoneLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        phoneLabel.setForeground(TEXT_BRIGHT);
+        gbc.gridx = 0; gbc.gridy = 4;
+        card.add(phoneLabel, gbc);
+
+        fakeCallerPhoneInput = new JTextField("+91-9876543210", 15);
+        styleTextField(fakeCallerPhoneInput);
+        gbc.gridx = 1;
+        card.add(fakeCallerPhoneInput, gbc);
+
+        // Auto-select first contact if present
+        Contact firstContact = (Contact) fakeCallContactCombo.getSelectedItem();
+        if (firstContact != null) {
+            fakeCallerNameInput.setText(firstContact.getName());
+            fakeCallerPhoneInput.setText(firstContact.getPhoneNumber());
+        }
 
         SafetyButton triggerCallBtn = new SafetyButton("TRIGGER INCOMING FAKE CALL NOW", BTN_WARNING, Color.WHITE, 14);
         triggerCallBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
         triggerCallBtn.setPreferredSize(new Dimension(280, 50));
         triggerCallBtn.addActionListener(e -> {
-            String selected = (String) callerCombo.getSelectedItem();
-            String callerName = safetyService.triggerFakeCall(selected);
-            showIncomingCallDialog(callerName);
+            String name = fakeCallerNameInput.getText().trim();
+            String phone = fakeCallerPhoneInput.getText().trim();
+            safetyService.triggerFakeCall(name, phone);
+            showIncomingCallDialog(name, phone);
         });
 
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.insets = new Insets(25, 10, 10, 10);
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; gbc.insets = new Insets(20, 8, 8, 8);
         card.add(triggerCallBtn, gbc);
 
         return card;
     }
 
-    private void showIncomingCallDialog(String callerName) {
+    private void populateFakeCallContactsCombo() {
+        if (fakeCallContactCombo == null) return;
+        fakeCallContactCombo.removeAllItems();
+        List<Contact> contacts = safetyService.getContacts();
+        for (Contact c : contacts) {
+            fakeCallContactCombo.addItem(c);
+        }
+    }
+
+    private void showIncomingCallDialog(String callerName, String phoneNumber) {
         JDialog callDialog = new JDialog(this, "INCOMING CALL", true);
         callDialog.setSize(380, 480);
         callDialog.setLocationRelativeTo(this);
@@ -357,14 +416,14 @@ public class SafetyFrame extends JFrame {
         callPanel.add(callType, gbc);
 
         JLabel callerNameLabel = new JLabel(callerName, SwingConstants.CENTER);
-        callerNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        callerNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         callerNameLabel.setForeground(TEXT_BRIGHT);
         gbc.gridy = 1;
         callPanel.add(callerNameLabel, gbc);
 
-        JLabel mobileNum = new JLabel("+91 98765 43210", SwingConstants.CENTER);
-        mobileNum.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        mobileNum.setForeground(TEXT_MUTED);
+        JLabel mobileNum = new JLabel(phoneNumber, SwingConstants.CENTER);
+        mobileNum.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        mobileNum.setForeground(TEXT_GOLD);
         gbc.gridy = 2;
         callPanel.add(mobileNum, gbc);
 
@@ -380,7 +439,7 @@ public class SafetyFrame extends JFrame {
         acceptBtn.addActionListener(e -> {
             ringStatus.setText("Call Connected - 00:01");
             JOptionPane.showMessageDialog(callDialog,
-                    "Fake Call Connected with " + callerName + ".\nYou can now discreetly excuse yourself and exit safely.",
+                    "Fake Call Connected with " + callerName + " (" + phoneNumber + ").\nYou can now discreetly excuse yourself and exit safely.",
                     "Fake Call Connected", JOptionPane.INFORMATION_MESSAGE);
             callDialog.dispose();
         });
@@ -399,50 +458,54 @@ public class SafetyFrame extends JFrame {
     }
 
     private JPanel createGpsCard() {
-        JPanel card = new JPanel(new BorderLayout(15, 15));
+        JPanel card = new JPanel(new BorderLayout(12, 12));
         card.setBackground(CARD_BG);
         card.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BORDER_GLOW, 2, true),
-                new EmptyBorder(20, 20, 20, 20)
+                new EmptyBorder(15, 15, 15, 15)
         ));
 
-        JLabel title = new JLabel("LIVE GPS & SAFE ZONE GEOFENCE MONITOR", SwingConstants.CENTER);
+        JLabel title = new JLabel("LIVE GPS RADAR MAP & SAFE ZONE GEOFENCE MONITOR", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 18));
         title.setForeground(TEXT_BRIGHT);
         card.add(title, BorderLayout.NORTH);
 
-        // Center Info Grid
-        JPanel infoGrid = new JPanel(new GridLayout(5, 1, 8, 8));
+        // Center Container: 2D Radar Canvas + Location Details
+        JPanel centerContainer = new JPanel(new BorderLayout(10, 10));
+        centerContainer.setOpaque(false);
+
+        gpsMapCanvas = new GpsMapCanvas();
+        gpsMapCanvas.updateGps(safetyService.getCurrentLatitude(), safetyService.getCurrentLongitude(),
+                safetyService.getCurrentSpeedKmh(), safetyService.getSafeZones());
+        centerContainer.add(gpsMapCanvas, BorderLayout.CENTER);
+
+        JPanel infoGrid = new JPanel(new GridLayout(4, 1, 4, 4));
         infoGrid.setOpaque(false);
 
         gpsCoordsLabel = new JLabel("Coordinates: " + safetyService.getFormattedCoordinates(), SwingConstants.CENTER);
-        gpsCoordsLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        gpsCoordsLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         gpsCoordsLabel.setForeground(TEXT_CYAN);
 
-        gpsSpeedLabel = new JLabel("Current Movement Speed: 0.0 km/h", SwingConstants.CENTER);
-        gpsSpeedLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        gpsSpeedLabel = new JLabel("Movement Speed: 0.0 km/h", SwingConstants.CENTER);
+        gpsSpeedLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         gpsSpeedLabel.setForeground(TEXT_MUTED);
 
         SafeZone zone = safetyService.getCurrentSafeZoneStatus();
-        safeZoneNameLabel = new JLabel("Current Zone: " + zone.getName(), SwingConstants.CENTER);
-        safeZoneNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        safeZoneNameLabel = new JLabel("Current Zone: " + zone.getName() + " [" + zone.getLevel() + "]", SwingConstants.CENTER);
+        safeZoneNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
         safeZoneNameLabel.setForeground(TEXT_GREEN);
 
-        safeZoneLevelLabel = new JLabel("Security Level: " + zone.getLevel(), SwingConstants.CENTER);
-        safeZoneLevelLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        safeZoneLevelLabel.setForeground(TEXT_GREEN);
-
         safeZoneDescLabel = new JLabel(zone.getDescription(), SwingConstants.CENTER);
-        safeZoneDescLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        safeZoneDescLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         safeZoneDescLabel.setForeground(TEXT_MUTED);
 
         infoGrid.add(gpsCoordsLabel);
         infoGrid.add(gpsSpeedLabel);
         infoGrid.add(safeZoneNameLabel);
-        infoGrid.add(safeZoneLevelLabel);
         infoGrid.add(safeZoneDescLabel);
 
-        card.add(infoGrid, BorderLayout.CENTER);
+        centerContainer.add(infoGrid, BorderLayout.SOUTH);
+        card.add(centerContainer, BorderLayout.CENTER);
 
         // Simulation Movement Controls
         JPanel simPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -468,22 +531,22 @@ public class SafetyFrame extends JFrame {
     private void updateGpsSimulation(double lat, double lng, double speed) {
         safetyService.updateGpsLocation(lat, lng, speed);
         gpsCoordsLabel.setText("Coordinates: " + safetyService.getFormattedCoordinates());
-        gpsSpeedLabel.setText(String.format("Current Movement Speed: %.1f km/h", speed));
+        gpsSpeedLabel.setText(String.format("Movement Speed: %.1f km/h", speed));
 
         SafeZone zone = safetyService.getCurrentSafeZoneStatus();
-        safeZoneNameLabel.setText("Current Zone: " + zone.getName());
-        safeZoneLevelLabel.setText("Security Level: " + zone.getLevel());
+        safeZoneNameLabel.setText("Current Zone: " + zone.getName() + " [" + zone.getLevel() + "]");
         safeZoneDescLabel.setText(zone.getDescription());
 
         if (zone.getLevel() == SafeZone.SecurityLevel.SAFE) {
             safeZoneNameLabel.setForeground(TEXT_GREEN);
-            safeZoneLevelLabel.setForeground(TEXT_GREEN);
         } else if (zone.getLevel() == SafeZone.SecurityLevel.CAUTION) {
             safeZoneNameLabel.setForeground(TEXT_GOLD);
-            safeZoneLevelLabel.setForeground(TEXT_GOLD);
         } else {
             safeZoneNameLabel.setForeground(TEXT_RED);
-            safeZoneLevelLabel.setForeground(TEXT_RED);
+        }
+
+        if (gpsMapCanvas != null) {
+            gpsMapCanvas.updateGps(lat, lng, speed, safetyService.getSafeZones());
         }
     }
 
@@ -530,6 +593,22 @@ public class SafetyFrame extends JFrame {
         SafetyButton addBtn = new SafetyButton("ADD TRUSTED CONTACT", BTN_SUCCESS);
         addBtn.addActionListener(e -> showAddContactDialog());
 
+        SafetyButton editBtn = new SafetyButton("EDIT SELECTED CONTACT", BTN_WARNING);
+        editBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row >= 0) {
+                String id = (String) contactsTableModel.getValueAt(row, 0);
+                String currentName = (String) contactsTableModel.getValueAt(row, 1);
+                String currentPhone = (String) contactsTableModel.getValueAt(row, 2);
+                String currentRelation = (String) contactsTableModel.getValueAt(row, 3);
+                boolean isPrimary = "PRIMARY".equals(contactsTableModel.getValueAt(row, 4));
+
+                showEditContactDialog(id, currentName, currentPhone, currentRelation, isPrimary);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a contact from table to edit.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
         SafetyButton removeBtn = new SafetyButton("REMOVE SELECTED CONTACT", BTN_DANGER);
         removeBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
@@ -537,12 +616,14 @@ public class SafetyFrame extends JFrame {
                 String id = (String) contactsTableModel.getValueAt(row, 0);
                 safetyService.removeContact(id);
                 refreshContactsTable();
+                populateFakeCallContactsCombo();
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a contact from table to remove.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             }
         });
 
         actionPanel.add(addBtn);
+        actionPanel.add(editBtn);
         actionPanel.add(removeBtn);
 
         card.add(actionPanel, BorderLayout.SOUTH);
@@ -569,6 +650,34 @@ public class SafetyFrame extends JFrame {
                         relationField.getText().trim(), primaryCheck.isSelected());
                 safetyService.addContact(c);
                 refreshContactsTable();
+                populateFakeCallContactsCombo();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void showEditContactDialog(String id, String currentName, String currentPhone, String currentRelation, boolean isPrimary) {
+        JTextField nameField = new JTextField(currentName);
+        JTextField phoneField = new JTextField(currentPhone);
+        JTextField relationField = new JTextField(currentRelation);
+        JCheckBox primaryCheck = new JCheckBox("Mark as Primary Emergency Contact", isPrimary);
+
+        Object[] message = {
+                "Full Name:", nameField,
+                "Phone Number:", phoneField,
+                "Relation (Family/Friend/Police):", relationField,
+                primaryCheck
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Edit Emergency Contact", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                safetyService.updateContact(id, nameField.getText().trim(), phoneField.getText().trim(),
+                        relationField.getText().trim(), primaryCheck.isSelected());
+                refreshContactsTable();
+                populateFakeCallContactsCombo();
+                JOptionPane.showMessageDialog(this, "Contact details updated successfully! Fake Call escape generator will now use this updated number.", "Contact Updated", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -688,6 +797,17 @@ public class SafetyFrame extends JFrame {
         foot.setForeground(TEXT_MUTED);
         panel.add(foot, BorderLayout.CENTER);
         return panel;
+    }
+
+    private void styleTextField(JTextField tf) {
+        tf.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tf.setBackground(PANEL_DARK);
+        tf.setForeground(TEXT_BRIGHT);
+        tf.setCaretColor(TEXT_CYAN);
+        tf.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(BORDER_GLOW, 2, true),
+                new EmptyBorder(6, 10, 6, 10)
+        ));
     }
 
     private void showCard(String name) {

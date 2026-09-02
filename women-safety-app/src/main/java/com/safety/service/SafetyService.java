@@ -77,11 +77,17 @@ public class SafetyService {
 
     // --- Fake Call Escape Generator ---
     public String triggerFakeCall(String callerName) {
+        return triggerFakeCall(callerName, "+91-9876543210");
+    }
+
+    public String triggerFakeCall(String callerName, String phoneNumber) {
         String name = (callerName == null || callerName.trim().isEmpty()) ? "Dad" : callerName.trim();
+        String phone = (phoneNumber == null || phoneNumber.trim().isEmpty()) ? "+91-9876543210" : phoneNumber.trim();
+
         incidentLogs.add(new IncidentRecord(
                 IncidentRecord.Type.FAKE_CALL_TRIGGER,
                 getFormattedCoordinates(),
-                "Fake escape incoming call simulated from caller: " + name
+                String.format("Fake escape incoming call simulated from: %s (%s)", name, phone)
         ));
         return name;
     }
@@ -147,6 +153,18 @@ public class SafetyService {
             throw new IllegalArgumentException("Contact name and phone number are required.");
         }
         contacts.add(contact);
+    }
+
+    public void updateContact(String id, String newName, String newPhone, String newRelation, boolean isPrimary) {
+        for (Contact c : contacts) {
+            if (c.getId().equalsIgnoreCase(id)) {
+                c.setName(newName);
+                c.setPhoneNumber(newPhone);
+                c.setRelation(newRelation);
+                c.setPrimary(isPrimary);
+                return;
+            }
+        }
     }
 
     public void removeContact(String id) {
